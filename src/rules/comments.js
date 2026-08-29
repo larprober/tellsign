@@ -115,6 +115,44 @@ function isEcho(comment, codeLine) {
   return commentWords.length <= 3 ? ratio === 1 : ratio >= 0.75;
 }
 
+// True when nothing but whitespace precedes the comment on its line.
+function ownLine(file, comment) {
+  const start = file.lineStarts[comment.line - 1];
+  return start !== undefined && !/\S/.test(file.src.slice(start, comment.start));
+}
+
+// A wrapped `//` comment is one comment, not several. Consecutive own-line
+// comments are joined before any rule looks at them, so a word that happens to
+// land at the start of a continuation line cannot read like the start of the
+// comment - which is how "handing over a / placeholder instead of the file"
+// used to trip the scaffold-residue check.
+function commentBlocks(file) {
+  const blocks = [];
+  let current = null;
+  const flush = () => {
+    if (current) blocks.push(current);
+    current = null;
+  };
+
+  for (const comment of file.comments) {
+    if (comment.type !== 'line' || !ownLine(file, comment)) {
+      flush();
+      blocks.push({ ...comment, lastLine: comment.line, wrapped: false });
+      continue;
+    }
+    if (current && comment.line === current.lastLine + 1) {
+      current.text = current.text.trim() + ' ' + comment.text.trim();
+      current.lastLine = comment.line;
+      current.wrapped = true;
+      continue;
+    }
+    flush();
+    current = { ...comment, lastLine: comment.line, wrapped: false };
+  }
+  flush();
+  return blocks;
+}
+
 function docFor(file, fn) {
   let best = null;
   for (const comment of file.comments) {
@@ -131,7 +169,7 @@ function run(ctx) {
   const findings = [];
 
   for (const file of ctx.files) {
-    for (const comment of file.comments) {
+    for (const comment of commentBlocks(file)) {
       const text = comment.text;
 
       for (const rule of RESIDUE_COMMENT) {
@@ -156,7 +194,8 @@ function run(ctx) {
           'an emoji in a source comment', { evidence: text.trim().slice(0, 100) }));
       }
 
-      if (comment.type === 'line' && !file.isTest) {
+      // Only an unwrapped one-liner can restate the line beneath it.
+      if (comment.type === 'line' && !comment.wrapped && !file.isTest) {
         const code = nextCodeLine(file, comment.line);
         if (code && isEcho(text, code)) {
           findings.push(finding(file, comment.start, 'echo-comment', 'low',
@@ -201,4 +240,4 @@ function run(ctx) {
   return findings;
 }
 
-module.exports = { run, isEcho };
+module.exports = { run, isEcho, commentBlocks };

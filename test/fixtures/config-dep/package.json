@@ -1,0 +1,8 @@
+{
+  "name": "config-dep-fixture",
+  "version": "1.0.0",
+  "dependencies": {
+    "expo-splash-screen": "^0.27.0",
+    "never-mentioned-anywhere": "^1.0.0"
+  }
+}

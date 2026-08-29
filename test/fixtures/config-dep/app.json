@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "fixture",
+    "plugins": [
+      "expo-splash-screen"
+    ]
+  }
+}

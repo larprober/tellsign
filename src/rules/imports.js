@@ -148,6 +148,7 @@ function run(ctx) {
   if (ctx.pkg.exists && ctx.files.length > 0) {
     for (const dep of ctx.pkg.runtime) {
       if (usedRoots.has(dep) || isImplicit(dep)) continue;
+      if (ctx.configText.includes(dep)) continue;
       findings.push({
         family: 'barnacle',
         severity: 'low',

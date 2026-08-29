@@ -52,4 +52,11 @@ function describe(counts) {
   return [`${NOTE.length} bytes`, ...lines, PLACEHOLDER_DOC].join('\n');
 }
 
-module.exports = { readJson, routeOf, fit, loadAll, describe };
+
+// A source file that copies as zero bytes is the sync client handing over a
+// placeholder instead of the real file, which is worth refusing to ship.
+function guardAgainstEmptyCopies(size) {
+  return size > 0;
+}
+
+module.exports = { readJson, routeOf, fit, loadAll, describe, guardAgainstEmptyCopies };

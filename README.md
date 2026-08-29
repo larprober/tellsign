@@ -6,7 +6,7 @@
   <a href="https://www.npmjs.com/package/tellsign"><img alt="npm" src="https://img.shields.io/npm/v/tellsign"></a>
   <a href="LICENSE"><img alt="license" src="https://img.shields.io/npm/l/tellsign"></a>
   <a href="package.json"><img alt="dependencies" src="https://img.shields.io/badge/dependencies-none-brightgreen"></a>
-  <a href="test/run.js"><img alt="tests" src="https://img.shields.io/badge/tests-29%20passing-brightgreen"></a>
+  <a href="test/run.js"><img alt="tests" src="https://img.shields.io/badge/tests-33%20passing-brightgreen"></a>
 </p>
 
 **Names the tell in machine-written JavaScript.**
@@ -142,7 +142,7 @@ Anything the scanner cannot read confidently, it skips rather than guesses at. T
 node test/run.js
 ```
 
-29 tests, no dependencies, no build step. `test/fixtures/slop` is a small project containing at least one instance of every family; `test/fixtures/clean` is written to look suspicious and must report nothing.
+33 tests, no dependencies, no build step. `test/fixtures/slop` is a small project containing at least one instance of every family; `test/fixtures/clean` is written to look suspicious and must report nothing.
 
 ```bash
 npm run self

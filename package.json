@@ -1,6 +1,6 @@
 {
   "name": "tellsign",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Names the tell in machine-written JavaScript: phantom imports, invented APIs, dead guards, scaffold residue.",
   "bin": {
     "tellsign": "bin/tellsign.js"

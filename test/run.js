@@ -5,7 +5,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { scan, globToRegExp } = require('../src/scan.js');
 const { lex } = require('../src/lex.js');
-const { isEcho } = require('../src/rules/comments.js');
+const { isEcho, commentBlocks } = require('../src/rules/comments.js');
 const { FAMILIES } = require('../src/families.js');
 
 const CLI = path.join(__dirname, '..', 'bin', 'tellsign.js');
@@ -112,6 +112,33 @@ test('a dot in a pattern is a literal dot', () => {
   const re = globToRegExp('build.min');
   assert.ok(re.test('build.min/app.js'));
   assert.ok(!re.test('buildxmin/app.js'));
+});
+
+process.stdout.write('\ncomment blocks\n');
+
+test('consecutive line comments are joined into one', () => {
+  const file = lex('// handing over a\n// placeholder instead of the file\nrun();');
+  const blocks = commentBlocks(file);
+  assert.strictEqual(blocks.length, 1);
+  assert.ok(blocks[0].text.includes('handing over a placeholder instead'));
+  assert.strictEqual(blocks[0].wrapped, true);
+});
+
+test('a comment trailing code is its own block', () => {
+  const file = lex('run(); // one\n// two');
+  assert.strictEqual(commentBlocks(file).length, 2);
+});
+
+test('a wrapped comment does not read as a placeholder marker', () => {
+  const wrapped = scan(path.join(__dirname, 'fixtures', 'clean'));
+  assert.ok(!wrapped.findings.some((f) => f.family === 'scaffold-residue'));
+});
+
+test('a dependency wired in by app.json is not a barnacle', () => {
+  const result = scan(path.join(__dirname, 'fixtures', 'config-dep'));
+  const barnacles = result.findings.filter((f) => f.family === 'barnacle').map((f) => f.message);
+  assert.ok(barnacles.some((m) => m.includes('never-mentioned-anywhere')));
+  assert.ok(!barnacles.some((m) => m.includes('expo-splash-screen')));
 });
 
 process.stdout.write('\nfixtures\n');

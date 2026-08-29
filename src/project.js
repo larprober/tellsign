@@ -141,6 +141,44 @@ function markupMentions(root, opts) {
   return names;
 }
 
+// Some dependencies are never imported because a config file wires them in:
+// an Expo plugin in app.json, a PostCSS plugin, a CI step. Their text is read
+// so the unused-dependency rule can check there before accusing anything.
+// Manifests and lockfiles are excluded - they name every dependency, used or
+// not, so including them would silence the rule entirely.
+const CONFIG_SKIP = new Set([
+  'package.json', 'package-lock.json', 'npm-shrinkwrap.json',
+  'yarn.lock', 'pnpm-lock.yaml', 'bun.lockb',
+]);
+
+const CONFIG_FILE = /(\.(json|ya?ml|toml|config\.[cm]?[jt]s)|^\.[a-z]+rc(\.[a-z]+)?|^Dockerfile|^Procfile)$/i;
+
+function configText(root, opts) {
+  const parts = [];
+  const dirs = [root, path.join(root, '.github', 'workflows'), path.join(root, '.config')];
+  for (const dir of dirs) {
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      if (!entry.isFile()) continue;
+      if (CONFIG_SKIP.has(entry.name)) continue;
+      if (!CONFIG_FILE.test(entry.name)) continue;
+      const full = path.join(dir, entry.name);
+      try {
+        if (fs.statSync(full).size > opts.maxBytes) continue;
+        parts.push(fs.readFileSync(full, 'utf8'));
+      } catch {
+        /* unreadable config tells us nothing either way */
+      }
+    }
+  }
+  return parts.join('\n');
+}
+
 function load(root, opts = {}) {
   const options = { maxBytes: 1024 * 512, ...opts };
   const abs = path.resolve(root);
@@ -174,6 +212,7 @@ function load(root, opts = {}) {
   const pkg = readPackage(projectRoot);
   const index = indexIdentifiers(files);
   const mentions = markupMentions(projectRoot, options);
+  const configs = configText(projectRoot, options);
 
   return {
     root: projectRoot,
@@ -183,6 +222,7 @@ function load(root, opts = {}) {
     identifiers: index.counts,
     identifiersByFile: index.perFile,
     markupMentions: mentions,
+    configText: configs,
     options,
   };
 }
