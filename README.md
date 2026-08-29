@@ -1,9 +1,13 @@
-# tellsign
+<p align="center">
+  <img src="assets/banner.svg" alt="tellsign" width="100%">
+</p>
 
-[![npm](https://img.shields.io/npm/v/tellsign)](https://www.npmjs.com/package/tellsign)
-[![license](https://img.shields.io/npm/l/tellsign)](LICENSE)
-[![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)](package.json)
-[![tests](https://img.shields.io/badge/tests-29%20passing-brightgreen)](test/run.js)
+<p align="center">
+  <a href="https://www.npmjs.com/package/tellsign"><img alt="npm" src="https://img.shields.io/npm/v/tellsign"></a>
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/npm/l/tellsign"></a>
+  <a href="package.json"><img alt="dependencies" src="https://img.shields.io/badge/dependencies-none-brightgreen"></a>
+  <a href="test/run.js"><img alt="tests" src="https://img.shields.io/badge/tests-29%20passing-brightgreen"></a>
+</p>
 
 **Names the tell in machine-written JavaScript.**
 
