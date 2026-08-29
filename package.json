@@ -1,0 +1,43 @@
+{
+  "name": "tellsign",
+  "version": "1.0.0",
+  "description": "Names the tell in machine-written JavaScript: phantom imports, invented APIs, dead guards, scaffold residue.",
+  "bin": {
+    "tellsign": "bin/tellsign.js"
+  },
+  "main": "src/scan.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/run.js",
+    "self": "node bin/tellsign.js ."
+  },
+  "keywords": [
+    "lint",
+    "linter",
+    "ai",
+    "llm",
+    "code-review",
+    "static-analysis",
+    "hallucination",
+    "slop",
+    "zero-dependency"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/larprober/tellsign.git"
+  },
+  "bugs": {
+    "url": "https://github.com/larprober/tellsign/issues"
+  },
+  "homepage": "https://github.com/larprober/tellsign#readme"
+}
